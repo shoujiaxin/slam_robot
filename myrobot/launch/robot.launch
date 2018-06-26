@@ -1,0 +1,11 @@
+<launch>
+
+  <arg name="model" default="$(find myrobot)/urdf/robot.xacro"/>
+
+  <param name="robot_description" command="$(find xacro)xacro.py $(arg model)"/>
+
+  <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher" respawn="true"/>
+  <node pkg="robot_state_publisher" type="state_publisher" name="robot_state_publisher" respawn="true"/>
+  <!--<node pkg="rviz" type="rviz" name="robot_rviz" args="-d $(find myrobot)/robot.rviz -f base_link"/>-->
+
+</launch>

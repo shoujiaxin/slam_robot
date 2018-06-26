@@ -1,0 +1,34 @@
+<launch>
+
+  <!--<arg name="use_sim_time" default="true"/>-->
+  <arg name="gui" default="true"/>
+  <arg name="debug" default="false"/>
+
+  <include file="$(find myrobot)/launch/robot.launch">
+    <arg name="model" value="$(find myrobot)/urdf/robot_sim.xacro"/>
+  </include>
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find myrobot)/worlds/myworld.world"/>
+    <!--<arg name="use_sim_time" value="${arg use_sim_time}"/>-->
+    <arg name="debug" value="$(arg debug)"/>
+    <arg name="gui" value="$(arg gui)"/>
+  </include>
+ 
+  <node pkg="gazebo_ros" type="spawn_model" name="urdf_spawner" args="-urdf -model robot -param robot_description -z 0.00" output="screen" respawn="false"/>
+  <node pkg="rviz" type="rviz" name="nav_rviz" args="-d $(find hector_slam_launch)/rviz_cfg/mapping_demo.rviz"/>
+  
+  <node pkg="map_server" type="map_server" name="map_server" args="$(find myrobot)/maps/map_sim.yaml"/>
+
+  <include file="$(find myrobot)/launch/amcl_diff.launch"/>
+  
+  <node pkg="move_base" type="move_base" name="move_base" output="screen" respawn="false">
+    <param name="controller_frequency" value="10.0"/>
+    <param name="controller_patiente" value="15.0"/>
+    <rosparam file="$(find myrobot)/config/costmap_common_params.yaml" command="load" ns="global_costmap"/>
+    <rosparam file="$(find myrobot)/config/costmap_common_params.yaml" command="load" ns="local_costmap"/>
+    <rosparam file="$(find myrobot)/config/local_costmap_params.yaml" command="load"/>
+    <rosparam file="$(find myrobot)/config/global_costmap_params.yaml" command="load"/>
+    <rosparam file="$(find myrobot)/config/base_local_planner_params.yaml" command="load"/>
+  </node>
+
+</launch>

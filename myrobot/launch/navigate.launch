@@ -1,0 +1,30 @@
+<launch>
+
+  <include file="$(find myrobot)/launch/robot.launch"/>
+  <include file="$(find base_controller)/launch/controller.launch"/>
+
+  <node pkg="rplidar_ros" type="rplidarNode" name="rplidarNode" required="true" output="screen">
+    <param name="serial_port" type="string" value="/dev/rplidar"/>
+    <param name="serial_baudrate" type="int" value="115200"/>
+    <param name="frame_id" type="string" value="rplidar"/>
+    <param name="inverted" type="bool" value="false"/>
+    <param name="angle_compensate" type="bool" value="true"/>
+  </node>
+
+  <node pkg="map_server" type="map_server" name="map_server" args="$(find myrobot)/maps/map.yaml"/>
+
+  <include file="$(find myrobot)/launch/amcl_diff.launch"/>
+
+   <node pkg="move_base" type="move_base" name="move_base" output="screen" respawn="false">
+    <param name="controller_frequency" value="10.0"/>
+    <param name="controller_patiente" value="15.0"/>
+    <rosparam file="$(find myrobot)/config/costmap_common_params.yaml" command="load" ns="global_costmap"/>
+    <rosparam file="$(find myrobot)/config/costmap_common_params.yaml" command="load" ns="local_costmap"/>
+    <rosparam file="$(find myrobot)/config/local_costmap_params.yaml" command="load"/>
+    <rosparam file="$(find myrobot)/config/global_costmap_params.yaml" command="load"/>
+    <rosparam file="$(find myrobot)/config/base_local_planner_params.yaml" command="load"/>
+  </node>
+
+  <node pkg="rviz" type="rviz" name="mapping_rviz" args="-d $(find hector_slam_launch)/rviz_cfg/mapping_demo.rviz"/>
+
+</launch>

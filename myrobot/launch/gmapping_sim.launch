@@ -1,0 +1,27 @@
+<launch>
+
+  <!--<arg name="use_sim_time" default="true"/>-->
+  <arg name="gui" default="true"/>
+  <arg name="debug" default="false"/>
+
+  <include file="$(find myrobot)/launch/robot.launch">
+    <arg name="model" value="$(find myrobot)/urdf/robot_sim.xacro"/>
+  </include>
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find myrobot)/worlds/myworld.world"/>
+    <!--<arg name="use_sim_time" value="${arg use_sim_time}"/>-->
+    <arg name="debug" value="$(arg debug)"/>
+    <arg name="gui" value="$(arg gui)"/>
+  </include>
+    
+  <node pkg="gazebo_ros" type="spawn_model" name="urdf_spawner" args="-urdf -model robot -param robot_description -z 0.00" output="screen" respawn="false"/>
+  <node pkg="rviz" type="rviz" name="nav_rviz" args="-d $(find hector_slam_launch)/rviz_cfg/mapping_demo.rviz"/>
+
+  <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping">
+    <remap from="scan" to="/robot/scan"/>
+  </node>
+
+  <node pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" name="teleop_twist_keyboard"/>
+
+</launch>
+  
