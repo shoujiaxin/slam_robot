@@ -1,0 +1,11 @@
+<launch>
+
+  <node pkg="base_controller" type="controller.py" name="base_controller" respawn="true"/>
+  <node pkg="base_controller" type="speed2odom" name="odometry_publisher" respawn="true"/>
+  <node pkg="rosserial_python" type="serial_node.py" name="serial_node" required="true">
+    <param name="port" value="/dev/arduino"/>
+    <param name="baud" value="115200"/>
+  </node>
+  <node pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" name="teleop_twist_keyboard"/>
+
+</launch>
